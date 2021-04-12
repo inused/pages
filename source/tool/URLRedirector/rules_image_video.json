@@ -1,0 +1,91 @@
+{
+    "version": "1.0",
+    "rules": [
+        {
+            "description": "优酷 http->https",
+            "origin": "http://(.*youku.com.*)",
+            "exclude": "",
+            "methods": [],
+            "types": ["main_frame"],
+            "target": "https://$1",
+            "example": "youku.com",
+            "enable": true,
+            "process": null,
+            "_originRe": {}
+        },
+        {
+            "description": "优酷 去除小尾巴",
+            "origin": "^https?://v(-wb)?.youku.com/v_show/id_(.*).html\\?.+",
+            "exclude": "",
+            "methods": [],
+            "types": [
+                "main_frame"
+            ],
+            "target": "https://v.youku.com/v_show/id_$2.html",
+            "example": "https://v.youku.com/v_show/id_XNDY2ODgzNjIw.html?fdsfhoidufiosdf",
+            "enable": true,
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "description": "原图显示 卡饭图床",
+            "origin": "^https?://a.ikafan.com/attachment/forum/(.+)",
+            "exclude": "",
+            "methods": [],
+            "types": [ "main_frame", "image" ],
+            "target": "https://fj.ikafan.com/attachment/forum/$1",
+            "example": "",
+            "enable": true,
+            "process": null,
+            "_originRe": {}
+        },
+        {
+            "description": "原图 新浪缩略图1解码",
+            "origin": "^https?://s.img.mix.sina.com.cn/\\\\S+img=(https?)?(:|%3A)?(//|%2F%2F)?(\\\\S+)(&size=.*)?",
+            "exclude": "",
+            "methods": [],
+            "types": [ "main_frame", "image" ],
+            "target": "https://$4",
+            "example": "",
+            "enable": true,
+            "process": null,
+            "_originRe": {}
+        },
+        {
+            "description": "原图 新浪缩略图2去后缀",
+            "origin": "^https?://(\\\\w).sinaimg.cn/(\\\\S+)&size=.*",
+            "exclude": "",
+            "methods": [],
+            "types": [ "main_frame", "image" ],
+            "target": "https://$1.sinaimg.cn/$2",
+            "example": "",
+            "enable": true,
+            "process": null,
+            "_originRe": {}
+        },
+        {
+            "description": "原图 Lofter;InoReader",
+            "origin": "^https?://(imglf(\\\\d)?.nosdn.127.net/img/\\\\w+.(jpg|jpeg|gif|png|bmp|webp))\\\\?.*",
+            "exclude": "",
+            "methods": [],
+            "types": [ "main_frame", "image" ],
+            "target": "https://$1",
+            "example": "",
+            "enable": true,
+            "process": null,
+            "_originRe": {}
+        },
+        {
+            "description": "原图 Tumblr亦InoReader",
+            "origin": "^https?://(\\\\d+).media.tumblr.com/(.+tumblr_\\\\w+_)500.(jpg|jpeg|gif|png|bmp|webp)(\\\\?ssitoken_\\\\d+_)?$",
+            "exclude": "",
+            "methods": [],
+            "types": [ "main_frame", "image" ],
+            "target": "https://$1.media.tumblr.com/$21280.$3",
+            "example": "",
+            "enable": true,
+            "process": null,
+            "_originRe": {}
+        }
+    ]
+}

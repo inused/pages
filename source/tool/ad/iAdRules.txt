@@ -1,0 +1,29 @@
+[Adblock Plus 2.0]
+! Title: 自用规则
+! Author: Laodi
+! Version: 1.0
+! Homepage: https://code.iant.eu.org/source/tool/ad/iAdRules.txt
+
+!# 元素隐藏规则 只能隐藏广告无法阻止广告的下载
+
+! inoreader.com start
+! 阅读界面未选择文章时 右侧广告位
+inoreader.com###no_article_selected > DIV
+! 文章列表左上角 广告位 移动端
+inoreader.com##.block_article_ad.mobile_leaderboard_ad.ad_size_mobile_leaderboard.sinner
+! 文章列表左上角 广告位
+inoreader.com##.block_article_ad.leaderboard_ad.ad_size_leaderboard.sinner
+! 文章列表左上角 "移除广告" 文字
+inoreader.com##div.ad_title.ad_title_centered
+! 仪表盘右上角广告位
+inoreader.com###dash_2>:first-child div
+! inoreader.com end
+
+! black1ce.com start
+! 广告屏蔽提示
+https://black1ce.com/*/mine.min.js
+! black1ce.com end
+
+! http://www.zxcs.me start
+*://www.zxcs.me/content/plugins/cpdown/style/show.js
+! http://www.zxcs.me end

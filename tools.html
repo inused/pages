@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Tools</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <!-- <script src="source/js/vue/vue-2.6.12.js"></script> -->
+    <script src="source/js/vue/vue.min-2.6.12.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+        }
+
+        /* 水平/垂直 均居中 */
+        .flex-center {
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 垂直居中 + 每个项目主轴方向两侧的间隔相等 */
+        .flex-around {
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            background-color: silver;
+            font-size: 30px;
+        }
+
+        .content {
+            width: 80%;
+            height: auto;
+            margin: 0 auto;
+            display: flex;
+            flex-grow: 1;
+        }
+
+        .footer {
+            width: 100%;
+            height: 30px;
+            display: flex;
+            margin-bottom: 0;
+            background-color: silver;
+            text-align: center;
+        }
+
+        .link {
+            border: 1px solid gray;
+            padding-right: 15px;
+        }
+
+        .link span {
+            background: silver;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+
+        <div id="header" class="header flex-center"><span>Tools</span></div>
+
+        <div id="content" class="content flex-around flex-wrap">
+            <div class="link" v-for="(item, key) in links">
+                <span>{{key}}</span>
+                <ol>
+                    <li v-for="link in item">
+                        <a :href="link.link">{{link.name}}</a>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="footer" class="footer flex-center">
+            <span>Hosted by <a href="https://pages.github.com/">GitHub Pages</a></span>
+        </div>
+
+    </div>
+
+    <script>
+        var tools = new Vue({
+            el: '#container',
+            data: {
+                links: {
+                    'Aria2': [
+                        { name: 'AriaNg', link: 'aria2/AriaNg/' },
+                        { name: 'WebUI', link: 'aria2/webui/' },
+                        { name: 'Yaaw', link: 'aria2/yaaw/' },
+                    ],
+                    /* 'Image': [
+                        { name: 'ipfs.io 无限图床', link: 'file/pictures/ipfs.io' },
+                        { name: '人民图床', link: 'file/pictures/people.com.cn/people_com_cn_upload_img.html' }
+                    ], */
+                    'Tool': [
+                        { name: 'MobaXterm license 生成', link: 'file/tool/MobaXtermKeygen.html' },
+                        { name: 'EditPlus注册码生成', link: 'file/tool/editplus_code.html' },
+                        { name: 'hostloc签到', link: 'file/hostloc/hostloc.html' },
+                        { name: '24字价值观加密', link: 'file/Core-Values-Encoder/index.html' },
+                        { name: 'ad', link: 'source/tool/ad/iAdRules.txt' }
+                    ],
+                    'Pay': [
+                        { name: '通用收款码', link: 'file/tool/AllQRCodePay.html' }
+                    ]
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

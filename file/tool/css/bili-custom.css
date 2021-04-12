@@ -1,0 +1,148 @@
+    html, body {
+        height: 100%
+    }
+
+    #body {
+        min-height: 100%;
+        height: auto!important;
+        height: 100%
+    }
+
+    #footer {
+        height: 60px;
+        background-color: #f5f5f5;
+        margin-top: -60px
+    }
+
+    #hero-unit .hero-unit {
+        margin-top: 60px
+    }
+
+    #hero-unit {
+        margin-bottom: -60px
+    }
+
+    #container {
+        margin-top: 60px;
+        padding-bottom: 60px
+    }
+
+    @media(max-width:767px) {
+        #footer {
+            margin-left: -20px;
+            margin-right: -20px;
+            padding-left: 20px;
+            padding-right: 20px
+        }
+    }
+
+    #footer .credit {
+        margin: 20px 0;
+        text-align: center
+    }
+
+    #placeholder {
+        height: 60px
+    }
+
+    .links {
+        margin-top: 10px
+    }
+
+    .links li {
+        margin-top: 10px
+    }
+
+    .link-h {
+        width: 85px;
+        padding: 5px 10px!important;
+        margin-bottom: 10px!important
+    }
+
+    ul {
+        list-style: none
+    }
+
+    .intro {
+        color: #999
+    }
+
+    .logopic {
+        margin-top: 4%;
+        text-align: center
+    }
+
+    .vertical-center {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translate(-50%, 10%)
+    }
+
+    .sharelogo {
+        margin-top: 10px;
+        padding-bottom: 10px
+    }
+
+    .foot-appdown {
+        position: fixed;
+        bottom: 0;
+        background: #fff;
+        width: 100%;
+        padding: 0 10px;
+        overflow: hidden;
+        z-index: 9999;
+        box-shadow: 0 -1px 1px #eee;
+        border-top: 1px solid #eee
+    }
+
+    .foot-appdown .box {
+        position: relative;
+        width: 100%;
+        display: inline-block;
+        text-align: left
+    }
+
+    .foot-appdown .icon {
+        padding-bottom: 0;
+        float: left;
+        width: 50px;
+        height: 60px;
+        margin-right: 10px;
+        background: url(http://image.game.uc.cn/2014/9/17/9917986.jpg) center center no-repeat;
+        background-size: contain
+    }
+
+    .foot-appdown .infobox {
+        position: relative;
+        padding-right: 40px
+    }
+
+    .foot-appdown .infobox .title {
+        height: 24px;
+        line-height: 24px;
+        color: #5e5656;
+        overflow: hidden;
+        margin-top: 5px
+    }
+
+    .foot-appdown .infobox .tags {
+        height: 20px;
+        line-height: 20px;
+        overflow: hidden;
+        color: #adaaaa;
+        margin-top: 5px
+    }
+
+    .foot-appdown .btdown {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        background-color: #fff;
+        color: #79c13a;
+        font-weight: 400;
+        display: inline-block;
+        border: 1px solid #79c13a;
+        padding: 3px 15px;
+        border-radius: 5px
+    }

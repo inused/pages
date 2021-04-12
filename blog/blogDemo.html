@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>md转换为html</title>
+    <!-- Markdown转HTML的JavaScript库 -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script> -->
+    <script type="text/javascript" src="/source/js/markdown/showdown-2.0.0-a1.js"></script>
+    <!-- MWeb的Markdown样式 首选 -->
+    <link rel="stylesheet" type="text/css" href="/source/css/markdown/MWeb.css">
+    <!-- GitHub的Markdown样式 次选 -->
+    <!-- <link rel="stylesheet" type="text/css" href="/source/css/markdown/github-markdown.css"> -->
+    <style>
+    #area>table {
+        width: 100%;
+        /*table-layout: fixed;*/
+    }
+    #area table tr td {
+        margin: 0;
+        padding: 6px;
+        border: 0;
+    }
+    #md-area {
+        width: 100%;
+        height: 600px;
+        font-size: 18px;
+        overflow: hidden;
+        font-weight: bold;
+        outline: none;
+    }
+    /*#show-area {
+        height: 600px;
+        background-color: #FCF6E5;
+    }*/
+    .clearfix:before {
+        content: "";
+        display: table;
+    }
+    </style>
+</head>
+
+<body>
+    <div style="font-size: 20px;height: 30px; text-align: center;color: #009689; font-weight: bold;">Markdown转换为HTML的Demo</div>
+	<!-- 将Markdown文本填于textarea区域 -->
+	<!-- <textarea name="" id="md-area" onkeyup=mdSwitch()></textarea> -->
+	<textarea id="md-area" style="display: none;">
+# 标题1
+## 标题2
+
+* 星号1
+	* 星号2
+		* 星号3
+			* 星号4
+
+1. 1
+2. 2
+	1. 11
+	2. 22
+		1. 111
+		2. 222
+
+*单星号*
+**双星号**
+***三星号***
+
+`单引号`
+``双引号``
+```三引号```
+
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
+```python
+print("hello world")
+```
+
+```java
+public static void main(String[] args) {
+	System.out.println("hello world");
+}
+```
+
+![图片测试](https://ws1.sinaimg.cn/large/007awY0bly1g0orbs7z3ig308h09l7qg.gif "图片")
+    </textarea>
+	<div id="show-area" class="markdown-body"></div>
+
+    <script>
+    function mdSwitch() {
+        var mdValue = document.getElementById("md-area").value;
+        var converter = new showdown.Converter();
+        var html = converter.makeHtml(mdValue);
+        document.getElementById("show-area").innerHTML = html;
+    }
+    mdSwitch();
+    </script>
+</body>
+
+</html>

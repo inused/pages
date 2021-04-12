@@ -1,0 +1,83 @@
+{
+    "version": "1.0",
+    "createdAt": "2016-09-28T14:14:22.212Z",
+    "rules": [
+        {
+            "origin": "ajax.googleapis.com",
+            "target": "ajax.proxy.ustclug.org",
+            "enable": true,
+            "description": "",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "fonts.googleapis.com",
+            "target": "fonts.proxy.ustclug.org",
+            "enable": true,
+            "description": "",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "storage.googleapis.com",
+            "target": "storage-googleapis.proxy.ustclug.org",
+            "enable": true,
+            "description": "",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "themes.googleusercontent.com",
+            "target": "google-themes.proxy.ustclug.org",
+            "enable": true,
+            "description": "",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "fonts.gstatic.com",
+            "target": "fonts-gstatic.proxy.ustclug.org",
+            "enable": true,
+            "description": "",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "gerrit.googlesource.com",
+            "target": "gerrit-googlesource.proxy.ustclug.org",
+            "enable": true,
+            "description": "",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "secure.gravatar.com",
+            "target": "gravatar.proxy.ustclug.org",
+            "enable": true,
+            "description": "",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        }
+    ]
+}

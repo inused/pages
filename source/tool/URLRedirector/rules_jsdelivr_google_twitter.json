@@ -1,0 +1,39 @@
+{
+    "version": "1.0",
+    "createdAt": "2020-02-20",
+    "rules": [
+        {
+            "description": "twitter widgets.js",
+            "origin": "platform.twitter.com/widgets.js",
+            "target": "cdn.jsdelivr.net/gh/jiacai2050/gooreplacer@gh-pages/proxy/widgets.js",
+            "enable": true,
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "description": "google api.js",
+            "origin": "apis.google.com/js/api.js",
+            "target": "cdn.jsdelivr.net/gh/jiacai2050/gooreplacer@gh-pages/proxy/api.js",
+            "enable": true,
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "description": "google plusone.js",
+            "origin": "apis.google.com/js/plusone.js",
+            "target": "cdn.jsdelivr.net/gh/jiacai2050/gooreplacer@gh-pages/proxy/plusone.js",
+            "enable": true,
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        }
+    ]
+}

@@ -1,0 +1,55 @@
+{
+    "version": "1.0",
+    "rules": [
+        {
+            "description": "GitHub raw文件1",
+            "origin": "https?://raw.githubusercontent.com/([^/]*)/([^/]*)/([^/]*)/(.*)",
+            "exclude": "",
+            "methods": [],
+            "types": [
+                "main_frame",
+                "sub_frame",
+                "xmlhttprequest",
+                "websocket",
+                "imageset",
+                "web_manifest"
+            ],
+            "target": "https://cdn.jsdelivr.net/gh/$1/$2@$3/$4",
+            "example": "https://raw.githubusercontent.com/Tornaco/Thanox/master/README.md",
+            "enable": true,
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "description": "GitHub raw文件2",
+            "origin": "https?://github.com/([^/]*)/([^/]*)/raw/([^/]*)/(.*)",
+            "exclude": "",
+            "methods": [],
+            "types": [
+                "main_frame",
+                "sub_frame",
+                "xmlhttprequest",
+                "websocket",
+                "imageset",
+                "web_manifest"
+            ],
+            "target": "https://cdn.jsdelivr.net/gh/$1/$2@$3/$4",
+            "example": "https://github.com/yujincheng08/BiliRoaming/raw/master/imgs/icon.png",
+            "enable": true,
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "description": "GitHub头像",
+            "origin": "avatars[0-9].githubusercontent.com",
+            "exclude": "avatars2.githubusercontent.com",
+            "methods": [],
+            "types": [],
+            "target": "avatars2.githubusercontent.com",
+            "example": "https://avatars1.githubusercontent.com/u/6882794?s=64&v=4",
+            "enable": true,
+            "process": "",
+            "_originRe": {}
+        }
+    ]
+}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>二维码图片生成</title>
+    <script type="text/javascript" src="../../source/js/qrcode/qrcode.js"></script>
+</head>
+
+<body style="text-align: center;margin: auto;" onload="load();">
+    <div id="qrcode" style="width: 70%;height: 70%;text-align: center;margin: auto;">
+        <table style="width: 100%;height: 100%;text-align: center;margin: auto;border: 5px;">
+            <tr>
+                <td>请求格式：url?type=<label style="color: red;">返回方式</label>&size=<label
+                        style="color: red;">长x宽</label>&data=<label style="color: red;">要转换的信息</label></td>
+            </tr>
+            <tr>
+                <td>type可选,默认open; size可选,默认256x256</td>
+            </tr>
+            <tr>
+                <td>返回方式：<label style="color: red;">data</label>->返回图片的dataURL;<label
+                        style="color: red;">open</label>->直接在当前页面展示</td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td>例子:本页地址?type=open&size=256x256&data=hahaha</td>
+            </tr>
+        </table>
+        <div id="qrimg"></div>
+    </div>
+    <script>
+        /*****************************************
+         * url编码函数
+         * 输入参数：待编码的字符串
+         * 输出参数：编码好的
+         ****************************************/
+        function load() {
+            var url = window.location.href;
+            var index = url.indexOf("?");
+            var datas = new Map();
+            // 链接中有参数
+            if (index > 0) {
+                var params = url.substr(index + 1).split("&");
+                // 将参数放于Map中
+                for (var i = 0, len = params.length; i < len; i++) {
+                    let param = params[i];
+                    if (param.indexOf("=")) {
+                        datas.set(param.split("=")[0], param.split("=")[1]);
+                    }
+                }
+                getQRCode("qrimg", datas);
+            } else {
+                console.log("无参数");
+            }
+
+        }
+
+        /*****************************************
+         * 创建QRCode图片获取器dataURL
+         * 输入参数：二维码图片的img标签父元素的ID
+         ****************************************/
+        function getQRCodeData(fid, info) {
+            // 用qrcode.js创建二维码图片
+            var qr = new QRCode(document.getElementById(fid), info.get("data"));
+            // 二维码元素父元素
+            var fele = document.getElementById(fid);
+            fele.innerHTML = "";
+            // 二维码图片的 dataURL
+            var data = qr._oDrawing._elCanvas.toDataURL("image/png");
+            return data;
+        }
+        /*****************************************
+         * 创建QRCode图片并展示在页面上
+         * 输入参数：二维码图片的img标签父元素的ID
+         ****************************************/
+        function getQRCode(fid, info) {
+            // 二维码元素父元素
+            var fele = document.getElementById(fid);
+            // 二维码图片的 dataURL
+            var data = getQRCodeData(fid, info);
+            // 移除老元素
+            fele.innerHTML = "";
+            // 创建新的二维码图片元素 解决手机上无法将canvas识别为图片的问题
+            var newImg = document.createElement("img");
+            // 添加src属性
+            newImg.src = data;
+            // 图片样式
+            //newImg.setAttribute("style", "display: block;margin: auto;width: 60%");
+            // 添加图片到页面上
+            fele.appendChild(newImg);
+            //fele.removeAttribute("title");
+            // 解决图片的 margin-top 在手机上失效的问题
+            fele.setAttribute("style", "padding-top: 80px;");
+        }
+    </script>
+</body>
+
+</html>

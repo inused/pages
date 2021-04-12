@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Browser Info</title>
+	<meta charset="utf-8"/>
+	<style type="text/css">
+		div {
+			background-size: auto;
+			text-align: left;
+			width: auto;
+			height: auto;
+			font-size: 20px;
+		}
+		div p label.title {
+			#background-color: #00FF99;
+		}
+		div p span.info {
+			font-size: 20px;
+			font-style: italic;
+			background-color: #C8C8C8;
+		}
+	</style>
+	<script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+</head>
+<body>
+	<div>
+		<p id="ip"></p>
+		<p id="userAgent"></p>
+		<p id="platform"></p>
+		<p id="language"></p>
+	</div>
+
+	<script type="text/javascript">
+		/** 拼接 label 的HTML字符串 */
+		function getTittle(tittle) {
+			return"<label class='title'>" + tittle + " : </label>";
+		}
+		/** 拼接 span 的HTML字符串 */
+		function getInfo(info) {
+			return "<span class='info' >" + info + "</span>";
+		}
+		/** 获取字节长度 */
+		function getBLength(str) {
+			let blen = 0;
+			for(let i=0,len=str.length; i<len; i++) {
+				if ((str.charCodeAt(i) & 0xff00) != 0) {
+					blen ++;
+				}
+				blen ++;
+			}
+			return blen;
+		}
+
+		document.getElementById("ip").innerHTML = getTittle("IP") + getInfo(returnCitySN["cip"]) + "<br/>" + getTittle("City") + getInfo(returnCitySN["cname"]);
+		document.getElementById("userAgent").innerHTML = getTittle("User-Agent") + "<br/>" + getInfo(navigator.userAgent);
+		document.getElementById("platform").innerHTML = getTittle("Platform") + getInfo(navigator.platform);
+		document.getElementById("language").innerHTML = getTittle("Language") + getInfo(navigator.language);
+
+		/*var inputs = document.getElementsByTagName("input");
+		for (let i=0,len=inputs.length;i < len;i++) {
+			let fontSize = getBLength(inputs[i].value);
+			inputs[i].style = "width:" + (fontSize * 13) + "px";
+		}*/
+	</script>
+</body>
+</html>

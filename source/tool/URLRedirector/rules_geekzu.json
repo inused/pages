@@ -1,0 +1,72 @@
+{
+    "version": "2.0",
+    "createdAt": "2017-08-17",
+    "rules": [
+        {
+            "origin": "ajax.googleapis.com",
+            "target": "gapis.geekzu.org/ajax",
+            "enable": true,
+            "description": "Google ajax",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "fonts.googleapis.com",
+            "target": "fonts.geekzu.org",
+            "enable": true,
+            "description": "Google fonts",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "themes.googleusercontent.com",
+            "target": "gapis.geekzu.org/g-themes",
+            "enable": true,
+            "description": "Google themes",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "fonts.gstatic.com",
+            "target": "gapis.geekzu.org/g-fonts",
+            "enable": true,
+            "description": "gstatic fonts",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "[0-3wW]*.gravatar.com/avatar",
+            "target": "fdn.geekzu.org/avatar",
+            "enable": true,
+            "description": "gravatar header",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        },
+        {
+            "origin": "secure.gravatar.com/avatar",
+            "target": "sdn.geekzu.org/avatar",
+            "enable": true,
+            "description": "gravatar header SSL",
+            "exclude": "",
+            "methods": [],
+            "types": [],
+            "process": "",
+            "_originRe": {}
+        }
+    ]
+}

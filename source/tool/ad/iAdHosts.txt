@@ -1,0 +1,24 @@
+# 自用host规则
+
+# 369出行APP开屏、banner广告 start
+0.0.0.0 fb.umeng.com
+0.0.0.0 plbslog.umeng.com
+0.0.0.0 tip1.iwaybook.com
+0.0.0.0 ulogs.umengcloud.com
+0.0.0.0 sdk.vipfengfei.com
+0.0.0.0 mutalisk.vipfengfei.com
+0.0.0.0 sdfp.snssdk.com
+0.0.0.0 is.snssdk.com
+0.0.0.0 bds.snssdk.com
+0.0.0.0 toblog.ctobsnssdk.com
+0.0.0.0 dc.sigmob.cn
+0.0.0.0 adservice.sigmob.cn
+0.0.0.0 shuttle.pandabus.cn
+# 369出行APP开屏、banner广告 end
+
+# MIUI start
+# MIUI 浏览器 网址鉴定
+0.0.0.0 security.browser.miui.com
+# MIUI 浏览器 热点
+0.0.0.0 hot.browser.miui.com
+# MIUI end
