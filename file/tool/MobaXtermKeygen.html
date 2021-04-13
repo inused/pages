@@ -6,93 +6,144 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MobaXterm Keygen</title>
+
     <script src="../../source/js/vue/vue.min-2.6.12.js"></script>
     <!-- <script src="../../source/js/vue/vue-2.6.12.js"></script> -->
     <script src="../../source/js/FileSaver/FileSaver.min.js"></script>
     <script src="../../source/js/jszip/jszip.min.js"></script>
 
     <link href="./css/pure-min.css" rel="stylesheet" />
+    <!-- <link href="../../source/css/bootstrap/bootstrap.min.css" rel="stylesheet" /> -->
+
 
     <style>
-        .box {
+        .box-main {
             margin: 0 auto;
-            width: 100%;
-        }
-        .auto-center {
             width: 500px;
+        }
+
+        .auto-center {
             margin: 0 auto;
         }
+
         .text-center {
             text-align: center;
         }
-        .my-input-tips {
+
+        .content-main {
+            padding-right: 30px;
+        }
+
+        .my-input {
+            position: relative;
+            display: inline-block;
+        }
+
+        .my-input-tips-wrap {
             color: red;
-            margin-left: 5px;
             position: absolute;
+            left: 10px;
+            bottom: 50px;
             box-sizing: border-box;
-            /* border: 1px solid #ccc;
+            border: 1px solid #ccc;
             box-shadow: inset 0 1px 3px #ddd;
-            background-color: white; */
+            background-color: white;
+            width: auto;
+            height: 50px;
+        }
+
+        .my-input-tips {
+            position: relative;
+            top: 10px;
+            margin: 0 20px;
             height: 30px;
             line-height: 30px;
             font-size: large;
+            white-space: nowrap;
         }
+
+        .my-input-arrow {
+            position: absolute;
+            left: 5px;
+            top: 49px;
+            width: 0;
+            height: 0;
+            border: 10px solid;
+            border-color: gray transparent transparent transparent;
+        }
+
         .hide {
             display: none;
+        }
+
+        input {
+            line-height: normal;
+        }
+
+        select {
+            height: auto !important;
+        }
+
+        .quote {
+            margin-top: 30px;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <div class="box">
-        <div id="app">
-            <div class="header text-center">
-                <h1>MobaXterm license 生成</h1>
-            </div>
+    <div class="box-main">
 
+        <div id="app">
             <div class="content">
                 <div class="pure-form pure-form-aligned auto-center">
                     <fieldset>
-                        <div class="pure-control-group">
-                            <label for="licenseType">版本：</label>
-                            <select name="licenseType" id="licenseType" v-model="licenseType">
-                                <option value="">请选择</option>
-                                <option v-for="(val, key) in LICENSE_TYPES" :value="val">{{key}}</option>
-                            </select>
-                        </div>
-                        <div class="pure-control-group">
-                            <label for="userName">用户名：</label>
-                            <my-input :idattr="'userName'" :validation="'^[a-zA-Z]+$'" :valueattr="userName"
-                                :validationtips="'只能使用字母'" :placeholderattr="'请填写用户名'" @set-data="setUserName">
-                            </my-input>
-                        </div>
-                        <div class="pure-control-group">
-                            <label for="versionName">版本号：</label>
-                            <my-input :idattr="'versionName'" :validation="'^[1-9][0-9]*\\.?\\d{0,1}$'"
-                                :validationtips="'小数且小数点后只能有1位'" :valueattr="versionName" :placeholderattr="'请填写版本号'"
-                                @set-data="setVersionName"></my-input>
-                        </div>
-                        <div class="pure-control-group">
-                            <label for="userNum">用户数：</label>
-                            <my-input :idattr="'userNum'" :validation="'^[1-9]+\\d*$'" :valueattr="userNum"
-                                :placeholderattr="'请填写用户数'" :validationtips="'数字且最小值为1'" @set-data="setUserNum">
-                            </my-input>
-                        </div>
-                        <div class="pure-controls">
-                            <button type="submit" class="pure-button pure-button-primary"
-                                @click.stop="generate">生成</button>
+                        <legend>
+                            <h1 class="text-center">MobaXterm license 生成</h1>
+                        </legend>
+
+                        <div class="pure-g">
+                            <div class="pure-control-group pure-u-1">
+                                <label for="licenseType">版本：</label>
+                                <select name="licenseType" id="licenseType" v-model="licenseType">
+                                    <option value="">请选择</option>
+                                    <option v-for="(val, key) in LICENSE_TYPES" :value="val">{{key}}</option>
+                                </select>
+                            </div>
+                            <div class="pure-control-group pure-u-1">
+                                <label for="userName">用户名：</label>
+                                <my-input :idattr="'userName'" :validation="'^[a-zA-Z]+$'" :valueattr="userName"
+                                    :validationtips="'只能使用字母'" :placeholderattr="'示例 defaultUser'" @set-data="setUserName">
+                                </my-input>
+                            </div>
+                            <div class="pure-control-group pure-u-1">
+                                <label for="versionName">版本号：</label>
+                                <my-input :idattr="'versionName'" :validation="'^[1-9][0-9]*\\.?\\d{0,1}$'"
+                                    :validationtips="'小数且小数点后只能有1位'" :valueattr="versionName"
+                                    :placeholderattr="'示例 21.0'" @set-data="setVersionName"></my-input>
+                            </div>
+                            <div class="pure-control-group pure-u-1">
+                                <label for="userNum">用户数：</label>
+                                <my-input :idattr="'userNum'" :validation="'^[1-9]+\\d*$'" :valueattr="userNum"
+                                    :placeholderattr="'示例 1'" :validationtips="'数字且最小值为1'" @set-data="setUserNum">
+                                </my-input>
+                            </div>
+                            <div class="pure-controls pure-u-1">
+                                <button type="submit" class="pure-button pure-button-primary"
+                                    @click.stop="generate">生成</button>
+                            </div>
                         </div>
                     </fieldset>
                 </div>
-                <div class="text-center">
-                    <a href="https://github.com/flygon2018/MobaXterm-keygen" target="_blank">MobaXterm-keygen 核心算法</a>
-                    <br /><br />
-                    <a href="https://github.com/Stuk/jszip" target="_blank">jszip js实现的zip文件库</a>
-                    <br /><br />
-                    <a href="https://github.com/eligrey/FileSaver.js" target="_blank">FileSaver js生成文件下载</a>
-                </div>
             </div>
         </div>
+    </div>
+    <div class="quote">
+        <a href="https://github.com/flygon2018/MobaXterm-keygen" target="_blank">MobaXterm-keygen 核心算法</a>
+        <br /><br />
+        <a href="https://github.com/Stuk/jszip" target="_blank">jszip js实现的zip文件库</a>
+        <br /><br />
+        <a href="https://github.com/eligrey/FileSaver.js" target="_blank">FileSaver js生成文件下载</a>
     </div>
 
     <script type="module">
@@ -151,16 +202,20 @@
             },
             components: {
                 'my-input': {
-                    template: `<div style="display:inline-block;">
-                        <input :id="idattr" :placeholder="placeholderattr" v-model="value" required/>
-                        <span :class="validationTipsDiplay" class="my-input-tips">{{validationtips}}</span>
-                        </div>`,
+                    template: `<div class="my-input">
+                                    <input :id="idattr" :placeholder="placeholderattr" v-model="value" required/>
+                                    <div :class="validationTipsDiplay" class="my-input-tips-wrap">
+                                        <span class="my-input-tips">{{validationtips}}</span>
+                                        <div class="my-input-arrow"></div>
+                                    </div>
+                                </div>`,
                     data() {
                         // 将组件外传入的 props 的 valueattr 赋值到当前的 data.value 值
                         // 同时本组件的 value 值是和当前变量双向绑定的
                         return {
                             value: this.valueattr,
-                            validationTipsDiplay: 'hide'
+                            validationTipsDiplay: 'hide',
+                            tipsDisplayTimeout: undefined
                         }
                     },
                     props: {
@@ -181,11 +236,13 @@
                                 let reg = new RegExp(this.validation);
                                 if (!reg.test(newVal)) {
                                     this.validationTipsDiplay = '';
-                                    var _this = this;
                                     this.value = oldVal;
-                                    setTimeout(function () {
+                                    if (this.tipsDisplayTimeout) clearTimeout(this.tipsDisplayTimeout);
+                                    var _this = this;
+                                    this.tipsDisplayTimeout = setTimeout(function () {
+                                        _this.tipsDisplayTimeout = undefined;
                                         _this.validationTipsDiplay = 'hide';
-                                    }, 3000);
+                                    }, 1000);
                                     return;
                                 }
                             }
