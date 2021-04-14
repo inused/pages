@@ -6,95 +6,165 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>二维码图片生成</title>
-    <script type="text/javascript" src="../../source/js/qrcode/qrcode.js"></script>
+    <!-- <script type="text/javascript" src="../../source/js/qrcode/qrcode.min.js"></script> -->
+    <script type="text/javascript" src="../../source/js/qrcode/qrcode.bugfix.min.js"></script>
+    <style>
+        .red {
+            color: red;
+        }
+        .dataForm > div {
+            width: 600px;
+            margin: 0 auto;
+        }
+        .dataForm input {
+            margin: 5px 10px 5px 0;
+            height: 35px;
+            line-height: 35px;
+            padding: 0 5px;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 3px #ddd;
+            background-color: white;
+        }
+        .dataForm label {
+            width: 50px;
+            height: 35px;
+            line-height: 35px;
+            text-align: right;
+        }
+        .data-wrap {
+            width: 100%;
+        }
+        .data-wrap input {
+            width: calc(100% - 70px);
+        }
+        .size-wrap {
+            width: 100%;
+        }
+        .btn {
+            width: 50px;
+            background-color: rgb(136, 172, 238) !important;
+            margin: 0 !important;
+            cursor: pointer;
+        }
+        .qrimg {
+            margin-top: 80px;
+        }
+    </style>
 </head>
 
-<body style="text-align: center;margin: auto;" onload="load();">
-    <div id="qrcode" style="width: 70%;height: 70%;text-align: center;margin: auto;">
-        <table style="width: 100%;height: 100%;text-align: center;margin: auto;border: 5px;">
-            <tr>
-                <td>请求格式：url?type=<label style="color: red;">返回方式</label>&size=<label
-                        style="color: red;">长x宽</label>&data=<label style="color: red;">要转换的信息</label></td>
-            </tr>
-            <tr>
-                <td>type可选,默认open; size可选,默认256x256</td>
-            </tr>
-            <tr>
-                <td>返回方式：<label style="color: red;">data</label>->返回图片的dataURL;<label
-                        style="color: red;">open</label>->直接在当前页面展示</td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td>例子:本页地址?type=open&size=256x256&data=hahaha</td>
-            </tr>
-        </table>
-        <div id="qrimg"></div>
+<body style="text-align: center; margin: 0 auto;" onload="load();">
+    <div id="qrcode" style="width: 70%; height: 70%; text-align: center; margin: 50px auto auto;">
+        <p>请求格式：<span class="url"></span>?data=<span class="red">要转换的数据</span>&width=<span class="red">256</span>&height=<span class="red">256</span></p>
+        <p class="red">data 后面的由 '&' 分隔的不带有 '=' 的数据一律视为 data 的一部分<br/>
+            如 '?data=a&b&width=256' 将把 'a&b' 转换为二维码
+        </p>
+        <p class="red">height 和 width 可选, 默认 都是 256</p>
+        <div class="dataForm">
+            <div class="data-wrap">
+                <label for="data">数据：</label><input type="text" id="data" value="" />
+            </div>
+            <div class="size-wrap">
+                <label for="width">宽度：</label><input type="number" id="width" value="256" />
+                <label for="height">高度：</label><input type="number" id="height" value="256" />
+                <input type="button" class="btn" onclick="generate()" value="生成" />
+            </div>
+        </div>
+        <div id="qrimg" class="qrimg">
+            <p class="red">填写数据点击生成</p>
+        </div>
     </div>
     <script>
+        // 添加遍历
+        HTMLCollection.prototype.forEach = [].forEach;
+        const dataInput = document.getElementById('data');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+
         /*****************************************
          * url编码函数
          * 输入参数：待编码的字符串
          * 输出参数：编码好的
          ****************************************/
         function load() {
-            var url = window.location.href;
-            var index = url.indexOf("?");
-            var datas = new Map();
-            // 链接中有参数
-            if (index > 0) {
-                var params = url.substr(index + 1).split("&");
-                // 将参数放于Map中
-                for (var i = 0, len = params.length; i < len; i++) {
-                    let param = params[i];
-                    if (param.indexOf("=")) {
-                        datas.set(param.split("=")[0], param.split("=")[1]);
+            let domain = `${window.location.origin}${window.location.pathname}`;
+            let paramStr = window.location.search.slice(1);
+
+            let urlEles = document.getElementsByClassName('url');
+            if (urlEles) urlEles.forEach(url => url.innerText = domain);
+
+            if (paramStr) {
+                // 链接中有参数
+                let params = {};
+                let paramsArray = paramStr.split("&");
+                let lastKey; // 上一个参数的key
+                paramsArray.forEach(param => {
+                    if (param.indexOf('=') > -1) {
+                        let paramArray = param.split('=');
+                        lastKey = paramArray[0];
+                        params[lastKey] = paramArray.length === 2 ? paramArray[1] : '';
+                    } else {
+                        // 没有 = 并且上一个参数是 data 则视为data的一部分
+                        if (lastKey === 'data') params.data = params.data + '&' + param;
+                        else params[param] = '';
                     }
-                }
-                getQRCode("qrimg", datas);
-            } else {
-                console.log("无参数");
+                });
+                
+                dataInput.value = decodeURI(params.data) || '';
+                widthInput.value = params.width || 256;
+                heightInput.value = params.height || 256;
+
+                generate();
+            }
+        }
+
+        function generate() {
+            
+            let dataStr = dataInput.value || '';
+            let width = parseInt(widthInput.value) || 256;
+            let height = parseInt(heightInput.value) || 256;
+
+            if (!dataStr) {
+                alert('先填写数据');
+                return;
             }
 
+            getQRCode("qrimg", dataStr, width, height);
         }
 
         /*****************************************
          * 创建QRCode图片获取器dataURL
          * 输入参数：二维码图片的img标签父元素的ID
          ****************************************/
-        function getQRCodeData(fid, info) {
+        function getQRCodeData(fid, data, width, height) {
             // 用qrcode.js创建二维码图片
-            var qr = new QRCode(document.getElementById(fid), info.get("data"));
+            let qr = new QRCode(document.getElementById(fid), {
+                text: data,
+                width: width,
+                height: height
+            });
             // 二维码元素父元素
-            var fele = document.getElementById(fid);
+            let fele = document.getElementById(fid);
             fele.innerHTML = "";
             // 二维码图片的 dataURL
-            var data = qr._oDrawing._elCanvas.toDataURL("image/png");
-            return data;
+            return qr._oDrawing._elCanvas.toDataURL("image/png");
         }
         /*****************************************
          * 创建QRCode图片并展示在页面上
          * 输入参数：二维码图片的img标签父元素的ID
          ****************************************/
-        function getQRCode(fid, info) {
+        function getQRCode(fid, data, width, height) {
             // 二维码元素父元素
-            var fele = document.getElementById(fid);
+            let fele = document.getElementById(fid);
             // 二维码图片的 dataURL
-            var data = getQRCodeData(fid, info);
+            let dataURL = getQRCodeData(fid, data, width, height);
             // 移除老元素
             fele.innerHTML = "";
             // 创建新的二维码图片元素 解决手机上无法将canvas识别为图片的问题
-            var newImg = document.createElement("img");
+            let newImg = document.createElement("img");
             // 添加src属性
-            newImg.src = data;
-            // 图片样式
-            //newImg.setAttribute("style", "display: block;margin: auto;width: 60%");
+            newImg.src = dataURL;
             // 添加图片到页面上
             fele.appendChild(newImg);
-            //fele.removeAttribute("title");
-            // 解决图片的 margin-top 在手机上失效的问题
-            fele.setAttribute("style", "padding-top: 80px;");
         }
     </script>
 </body>
