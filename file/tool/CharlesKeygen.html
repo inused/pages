@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Charles 注册码生成</title>
+    <link rel="stylesheet" href="./css/Raleway.200.css" />
+    <link rel="stylesheet" href="./css/pure-min.css" />
+
+    <style>
+      .text-center {
+        text-align: center;
+      }
+      .text-right {
+        text-align: right;
+      }
+      input {
+        height: auto;
+        line-height: normal;
+        display: inline-block !important;
+      }
+      fieldset > div {
+        margin-bottom: 5px;
+        white-space: nowrap;
+      }
+    </style>
+    <script>
+      /**
+       * RC5加解密
+       * 直接翻译自 https://gitee.com/thom/charles-keygen/blob/master/src/main/java/com/xk72/charles/SimpleRC5.java
+       */
+      function SimpleRC5() {
+        //const P32 = -1209970333;
+        //const Q32 = -1640531527;
+        //const P32 = 0xb7e15163;
+        //const Q32 = 0x9e3779b9;
+        const P32 = 0xb7e15163n.longForceToInt();
+        const Q32 = 0x9e3779b9n.longForceToInt();
+
+        const R = 12;
+        const t = 2 * (R + 1);
+        const S = new Array(t).fill(0);
+        const c = 2;
+
+        const key = arguments[arguments.length - 1];
+        if (typeof key === "bigint") setKey();
+        else throw new TypeError("参数必须为 BigInt");
+
+        /**
+         * RC5加密
+         * @param {BigInt} input
+         * @returns {BigInt}
+         */
+        this.encrypt = function (input) {
+          let A = input.longForceToInt() + S[0];
+          let B = input.unsignedRightShift(32).longForceToInt() + S[1];
+          //int B = (int) (in >>> 32) + S[1];
+
+          for (let i = 1; i <= R; i++) {
+            A = rotateLeft(A ^ B, B) + S[2 * i];
+            B = rotateLeft(B ^ A, A) + S[2 * i + 1];
+          }
+
+          return asLong(A, B);
+        };
+
+        /**
+         * RC5解密
+         * @param {BigInt} input
+         * @returns {BigInt}
+         */
+        this.decrypt = function (input) {
+          let A = input.longForceToInt();
+          let B = input.unsignedRightShift(32).longForceToInt();
+          //let B = (input >>> 32n).longForceToInt();
+
+          for (let i = R; i > 0; i--) {
+            B = rotateRight(B - S[2 * i + 1], A) ^ A;
+            A = rotateRight(A - S[2 * i], B) ^ B;
+          }
+
+          B = BigInt(B - S[1]).longForceToInt();
+          A = BigInt(A - S[0]).longForceToInt();
+
+          return asLong(A, B);
+        };
+
+        /**
+         * @param {number} x
+         * @param {number} y
+         * @returns {number}
+         */
+        function rotateLeft(x, y) {
+          return (x << (y & (32 - 1))) | (x >>> (32 - (y & (32 - 1))));
+        }
+        this.rotateLeft = rotateLeft;
+
+        /**
+         * @param {number} x
+         * @param {number} y
+         * @returns {number}
+         */
+        function rotateRight(x, y) {
+          return (x >>> (y & (32 - 1))) | (x << (32 - (y & (32 - 1))));
+        }
+
+        /**
+         *
+         * @param {number} a
+         * @param {number} b
+         * @returns {BigInt}
+         */
+        function asLong(a, b) {
+          return (BigInt(a) & 0xffffffffn) | (BigInt(b) << 32n);
+        }
+
+        function setKey() {
+          let L = [];
+          L.push(key.longForceToInt());
+          L.push(key.unsignedRightShift(32).longForceToInt());
+          //L[1] = (int) (key >>> 32);
+
+          S[0] = P32;
+          for (let i = 1; i < t; i++) {
+            S[i] = BigInt(S[i - 1] + Q32).longForceToInt();
+          }
+
+          let i = 0,
+            j = 0;
+          let A = 0,
+            B = 0;
+
+          for (let k = 0; k < 3 * t; k++) {
+            A = S[i] = rotateLeft(S[i] + A + B, 3);
+            B = L[j] = rotateLeft(L[j] + A + B, A + B);
+            i = (i + 1) % t;
+            j = (j + 1) % c;
+          }
+        }
+      }
+    </script>
+    <script>
+      /**
+       * 模拟Java的类型强转,会损失精度的那种
+       * @param {number|bigint} sourceNum 原始数据
+       * @param {number} targetBit 要强制转换成的数据的字节数, byte:1; short:2; int:4; long:8(该情况未考虑,所以可能会有问题)
+       * @returns 强转后的数据
+       */
+      function forceCast(sourceNum, targetBit) {
+        // 转二进制 去除负号
+        let bin = sourceNum.toString(2);
+        if (sourceNum < 0) bin = sourceNum.complement();
+
+        // 补足指定bit位数
+        let targetBitNum = targetBit * 8;
+        if (bin.length >= targetBitNum)
+          bin = bin.substring(bin.length - targetBitNum);
+        // 原始数据bit数没达到指定位数,无需强转
+        else return sourceNum;
+
+        if (bin.startsWith("1")) {
+          // 强转后是负数 求原码
+          let hex = "7".padEnd(2 * targetBit, "f");
+          let result = (parseInt(bin.substring(1), 2) ^ parseInt(hex, 16)) + 1;
+          return -result;
+        }
+        // 正数 补码即是原码
+        else return parseInt(bin, 2);
+      }
+
+      /**
+       * long(8字节)强转转int(4字节),模拟Java的类型强转
+       * @returns
+       */
+      Number.prototype.longForceToInt = BigInt.prototype.longForceToInt = function () {
+        return parseInt(forceCast(this, 4));
+      };
+      /**
+       * int(4字节)强转转byte(1字节),模拟Java的类型强转
+       * @returns
+       */
+      Number.prototype.intForceToByte = BigInt.prototype.intForceToByte = function () {
+        return parseInt(forceCast(this, 1));
+      };
+
+      /**
+       * int(4字节)转byte[]数组,大端
+       * @returns
+       */
+      Number.prototype.intTo4BitBytes = function () {
+        let bs = [];
+        for (let i = 3; i >= 0; i--) bs.push((this >> (8 * i)) & 0xff);
+        return bs;
+      };
+
+      /**
+       * long(8字节)转byte[],大端
+       * @returns {}
+       */
+      BigInt.prototype.longTo8BitBytes = function () {
+        let bs = [];
+        let shift;
+        for (let i = 0; i < 8; i++) {
+          shift = BigInt((7 - i) << 3);
+          bs.push(((this >> shift) & 0xffn).intForceToByte());
+          //bs.push(parseInt((this >> shift) & 0xFFn));
+        }
+        return bs;
+      };
+
+      /**
+       * BigInt类型的无符号右移位运算 当做long(8字节)类型处理
+       * @param {number} shiftDistance 右移位数
+       */
+      BigInt.prototype.unsignedRightShift = function (shiftDistance) {
+        // 正数正经右移
+        if (this > 0n) return this >> BigInt(shiftDistance);
+
+        // https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.19
+        // Java移位操作符中,有以下规则,保证了实际移位位数总是在各自类型的bit位数范围内(int:0~31;long:0~63)
+        // 如果左侧操作数为int,则移位距离为位数二进制补码的最后5位所代表的数,比如2>>1,1的补码最后8位为00000001,最后5位为00001代表1,即右移1位
+        // 如果左侧操作数为long,则移位距离为位数二进制补码的最后6位所代表的数,比如2L>>1,1的补码最后6位为000001代表1,即右移1位
+        // 移位距离为负数的同样遵循当前规则,可以变换成正数
+        // 比如>>-1,-1的补码32个bit位全是1(第1位是符号位),则int右移时补码后5位为11111代表31,因此n>>-1 === n>>31
+
+        // 负数另外计算 只处理long类型
+        // 计算真正的移位位数 即补码最后6位
+        let shiftDistanceBin = shiftDistance.complement();
+        shiftDistanceBin = shiftDistanceBin.substring(
+          shiftDistanceBin.length - 6
+        );
+        shiftDistance = parseInt(shiftDistanceBin, 2);
+
+        // 求补码 补符号位
+        bin = this.complement();
+        // 右移位 补足long类型bit位数
+        bin = bin.substr(0, bin.length - shiftDistance).padStart(64, "0");
+        return BigInt("0b" + bin);
+      };
+
+      /**
+       * 求补码,求long(8字节)的
+       */
+      BigInt.prototype.complement = function () {
+        return calcComplement(this, 1n, 0xffffffffffffffffn, 64, (bin) =>
+          BigInt("0b" + bin)
+        );
+      };
+
+      /**
+       * 求补码, 求int(4字节)的
+       */
+      Number.prototype.complement = function () {
+        return calcComplement(this, 1, 0xffffffff, 32, (bin) =>
+          parseInt(bin, 2)
+        );
+      };
+
+      /**
+       * 求数的补码,带符号位
+       * @param {number|bigint} source 数据
+       * @param {number|bigint} one 数字1
+       * @param {number|bigint} intermediate 求反码时的异或数
+       * @param {number} bitDigit 目标数据的bit位数 int:32; long:64
+       * @param {function} bin2decFunc 二进制转十进制时的方式
+       */
+      function calcComplement(
+        source,
+        one,
+        intermediate,
+        bitDigit,
+        bin2decFunc
+      ) {
+        // 正数补码是本身 补足位数
+        if (source >= 0) return source.toString(2).padStart(bitDigit, "0");
+        // 求反码 同时补足bit位数(第1位为符号位)
+        let bin = (-source ^ intermediate)
+          .toString(2)
+          .padStart(bitDigit - 1, "0");
+        return (bin2decFunc(bin) + one).toString(2);
+      }
+
+      /**
+       * 8字节 byte[] 转 Long 大端
+       * @returns {BigInt}
+       */
+      Array.prototype.bytesToLong = function () {
+        let value = 0n;
+        let shift;
+        for (let count = 0; count < 8; ++count) {
+          shift = BigInt((7 - count) << 3);
+          value |= (0xffn << shift) & (BigInt(this[count]) << shift);
+        }
+        return value;
+      };
+
+      /**
+       * 4字节 byte[] 转 int 大端
+       * @returns {number}
+       */
+      Array.prototype.bytesToInt = function () {
+        let value = 0;
+        for (let count = 0; count < 4; ++count) {
+          value |= this[count] << ((7 - count) << 3);
+        }
+        return value;
+      };
+
+      /**
+       * 字符串转 byte[]
+       */
+      String.prototype.toBytes = function () {
+        var bytes = new Array();
+        var len, char;
+        len = this.length;
+        for (var i = 0; i < len; i++) {
+          char = this.charCodeAt(i);
+          if (char >= 0x010000 && char <= 0x10ffff) {
+            bytes.push(((char >> 18) & 0x07) | 0xf0);
+            bytes.push(((char >> 12) & 0x3f) | 0x80);
+            bytes.push(((char >> 6) & 0x3f) | 0x80);
+            bytes.push((char & 0x3f) | 0x80);
+          } else if (char >= 0x000800 && char <= 0x00ffff) {
+            bytes.push(((char >> 12) & 0x0f) | 0xe0);
+            bytes.push(((char >> 6) & 0x3f) | 0x80);
+            bytes.push((char & 0x3f) | 0x80);
+          } else if (char >= 0x000080 && char <= 0x0007ff) {
+            bytes.push(((char >> 6) & 0x1f) | 0xc0);
+            bytes.push((char & 0x3f) | 0x80);
+          } else {
+            bytes.push(char & 0xff);
+          }
+        }
+        return bytes;
+      };
+    </script>
+    <script>
+      //const RC5KEY_NAME = 0x7a21c951691cd470n;
+      const RC5KEY_NAME = 8800536498351690864n;
+      //const RC5KEY_KEY = 0xb4f0e0ccec0eafadn;
+      const RC5KEY_KEY = -5408575981733630035n;
+
+      /**
+       * magic by worked / banned key
+       */
+      //const NAME_PREFIX = 0x54882f8a;
+      const NAME_PREFIX = 1418211210;
+
+      /**
+       * @param {string} name
+       * @returns {number}
+       */
+      function calcPrefix(name) {
+        let bytes = name.replace(/[  \u180e    　]/g, " ").toBytes();
+
+        let len = bytes.length + 4;
+        let padded = ((~len + 1) & (8 - 1)) + len;
+
+        let input = [...bytes.length.intTo4BitBytes(), ...bytes];
+        while (input.length < padded) input.push(0);
+
+        let rc5 = new SimpleRC5(RC5KEY_NAME);
+        let output = [];
+        for (let i = 0; i < Math.floor(input.length / 8); i++) {
+          output.push(
+            ...rc5
+              .encrypt(input.slice(i * 8, i * 8 + 8).bytesToLong())
+              .longTo8BitBytes()
+          );
+        }
+        while (output.length < padded) output.push(0);
+
+        let n = 0;
+        output.forEach((b) => (n = rc5.rotateLeft(n ^ b, 0x3)));
+        return n;
+      }
+
+      /**
+       * @param {BigInt} n
+       * @returns {number}
+       */
+      function xor(n) {
+        let n2 = 0n;
+        for (let i = 56; i >= 0; i -= 8) {
+          n2 ^= n.unsignedRightShift(i) & 0xffn;
+          //n2 ^= ((n >>> i) & 0xffL);
+        }
+        return Math.abs((n2 & 0xffn).longForceToInt());
+      }
+
+      /**
+       * @param {number} name 用户名
+       * @param {number} suffix
+       * @returns {string}
+       */
+      function keygen(name) {
+        let prefix = BigInt(calcPrefix(name) ^ NAME_PREFIX) << 32n;
+        let min = 100,
+          max = 10000;
+        let suffix = Math.floor(Math.random() * (max - min) + min);
+
+        switch (suffix >> 16) {
+          case 0x0401: // user - v4
+          case 0x0402: // site - v4
+          case 0x0403: // multi-site - v4
+            prefix |= BigInt(suffix);
+            break;
+          default:
+            prefix |= BigInt(0x01000000 | (suffix & 0xffffff));
+            break;
+        }
+        let out = new SimpleRC5(RC5KEY_KEY).decrypt(prefix);
+        let key1 = BigInt("0b" + xor(prefix).complement())
+          .toString(16)
+          .padStart(2, "0");
+        let key2 = BigInt("0b" + out.complement())
+          .toString(16)
+          .padStart(16, "0");
+        return key1 + key2;
+      }
+    </script>
+  </head>
+  <body>
+    <div style="margin: 0 auto; width: 360px">
+      <div id="main">
+        <div class="content">
+          <div class="pure-form">
+            <fieldset class="text-center" style="width: 350px">
+              <legend><h1>Charles 注册码生成</h1></legend>
+              <div class="text-right">
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  style="width: 76%; text-align: center; height: auto"
+                  placeholder="输入用户名"
+                />
+                <button
+                  type="submit"
+                  class="pure-button pure-button-primary"
+                  style="width: 20%; box-sizing: border-box; margin: 0"
+                  onclick="generate();"
+                >
+                  生成
+                </button>
+              </div>
+              <input
+                name="regcode"
+                type="text"
+                id="regcode"
+                readonly="readonly"
+                class="text-center"
+                style="width: 100%"
+                placeholder="这里显示生成的注册码"
+              />
+            </fieldset>
+            填写用户名，点击【生成】按钮，成功~
+            <hr width="100%" />
+          </div>
+          <div style="text-align: center">
+            核心算法：<a href="https://gitee.com/thom/charles-keygen"
+              >charles-keygen</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const usernameEle = document.getElementById("username");
+      const regcodeEle = document.getElementById("regcode");
+      function generate() {
+        let username = usernameEle.value;
+        if (!username) {
+          alert("填写用户名");
+          return;
+        }
+        regcodeEle.value = keygen(username);
+      }
+    </script>
+  </body>
+</html>
