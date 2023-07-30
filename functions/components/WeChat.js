@@ -170,7 +170,8 @@ export default {
    * @returns {Response}
    */
   async text(cfContext, params) {
-    const msgText = params?.msgcontent?.content;
+    // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.content=消息内容'
+    const msgText = params?.msgcontent?.content || params?.['msgcontent.content'];
     if (empty(msgText)) return initParamErrorResponse('消息内容 msgcontet.content 为空');
 
     params.msgtype = 'text';
@@ -191,9 +192,10 @@ export default {
    * @returns {Response}
    */
   async textcard(cfContext, params) {
-    const title = params?.msgcontent?.title,
-      description = params?.msgcontent?.description,
-      url = params?.msgcontent?.url;
+    // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.xxx=内容'
+    const title = params?.msgcontent?.title || params?.['msgcontent.title'],
+      description = params?.msgcontent?.description || params?.['msgcontent.description'],
+      url = params?.msgcontent?.url || params?.['msgcontent.url'];
 
     let errMsg = '';
     if (empty(title)) errMsg += 'msgcontent.title ';
@@ -221,7 +223,8 @@ export default {
    * @returns {Response}
    */
   async markdown(cfContext, params) {
-    const msgText = params?.msgcontent?.content;
+    // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.content=消息内容'
+    const msgText = params?.msgcontent?.content || params?.['msgcontent.content'];
     if (empty(msgText)) return initParamErrorResponse('消息内容 msgcontet.content 为空');
 
     params.msgtype = 'markdown';
