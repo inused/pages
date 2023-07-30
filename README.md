@@ -23,7 +23,7 @@
     * `Variable name`部分填入`pagesKV`
     * `KV namespace`部分选择4.1新建的 KV
 
-### 二、企业微信
+### 二、企业微信推送消息
 
 #### 注册企业微信及应用
 
@@ -43,7 +43,7 @@ Wechat_touser: 默认接收消息的用户,可在调用接口时自行指定 tou
 
 #### 使用
 
-> 接口地址 `https://{你的pages应用名}.pages.dev/wechat?cf_token={刚才在环境变量中配置的WEB_TOKEN}&msgtype={本次发送消息的类型,默认text}`
+> 接口地址 `https://{你的pages应用名}.pages.dev/wechat?cf_token={刚才在环境变量中配置的WEB_TOKEN}&msgtype={本次发送消息的类型,默认text}&其他参数`
 
 > 当前仅实现了三种类型的消息 [文本消息text](https://developer.work.weixin.qq.com/document/path/90236#%E6%96%87%E6%9C%AC%E6%B6%88%E6%81%AF) [文本卡片消息textcard](https://developer.work.weixin.qq.com/document/path/90236#%E6%96%87%E6%9C%AC%E5%8D%A1%E7%89%87%E6%B6%88%E6%81%AF) [markdown消息markdown](https://developer.work.weixin.qq.com/document/path/90236#markdown%E6%B6%88%E6%81%AF)
 >
@@ -52,4 +52,38 @@ Wechat_touser: 默认接收消息的用户,可在调用接口时自行指定 tou
 > 每种消息类型需要的参数可直接查看`functions/components/WeChat.js` 文件中 `export default {}` 部分
 
 1. GET方式: 在接口地址后面拼接相应参数即可
+
+示例:
+* text:
+```bash
+curl 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text&msgcontent.content=消息标题\n消息内容: 点击<a href="https://github.com/">跳转</a>'
+```
+
+* textcard: 
+```bash
+curl 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=textcard&msgcontent.title=消息标题&msgcontent.description=描述信息&msgcontent.url=https://github.com'
+```
+
+* markdown
+```bash
+curl 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown&msgcontent.content=# 消息1 *消息2*'
+```
+
+
 2. POST方式: 请求体使用json字符串传入接口
+
+示例:
+* text:
+```bash
+curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息标题\n消息内容: 点击<a href="https://github.com/">跳转</a>" }}'
+```
+
+* textcard: 
+```bash
+curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=textcard' -d '{"msgcontent": { "title": "消息标题","description": "描述信息","url": "https://github.com" }}'
+```
+
+* markdown
+```bash
+curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "# 消息1 *消息2*" }}'
+```
