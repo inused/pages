@@ -87,3 +87,71 @@ curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=textcard' -d '
 ```bash
 curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "# 消息1 *消息2*" }}'
 ```
+
+### 二、Telegram bot推送消息
+
+#### 创建Telegram bot
+
+* 可查看官方文档[How Do I Create a Bot?](https://core.telegram.org/bots#how-do-i-create-a-bot)部分，注册一个bot
+  * 通过 @BotFather https://t.me/BotFather 创建bot
+  * 1. /start
+  * 2. /newbot  输入bot用户名,可用的话则直接创建
+  * 3. /mybots 点击要使用的bot
+  * 4. 点击 API Token 按钮，获取token
+* 获取chat_id,实际为用户ID
+  * 1. 打开新建的bot，向其任意发送一条消息
+  * 2. 访问 https://api.telegram.org/bot{上面获取到bot的token}/getUpdates
+  * 3. 在响应的json中找到刚才发送账号的数据,其中的id字段即为 chat_id
+
+需要配置以下环境变量
+```
+Telegram_botToken: 通过 [@BotFather](https://t.me/BotFather)创建bot并获取token
+Telegram_chatId: 给谁发消息，实际为目标用户的ID, 可被接口参数中的 chatId 覆盖
+```
+
+#### 使用
+
+> 接口地址 `https://{你的pages应用名}.pages.dev/telegram?cf_token={刚才在环境变量中配置的WEB_TOKEN}&msgtype={本次发送消息的类型,默认text}&其他参数`
+
+> [Telegram sendMessage API Doc](https://core.telegram.org/bots/api#sendmessage)
+> 当前仅实现了三种类型的消息 [默认类型text](https://core.telegram.org/bots/api#formatting-options)、[MarkdownV2类型markdown](https://core.telegram.org/bots/api#markdownv2-style)、[HTML类型html](https://core.telegram.org/bots/api#html-style)
+> 具体格式要求、限制均可在官方文档中查看
+>
+> 每种消息类型需要的参数可直接查看`functions/components/Telegram.js` 文件中 `export default {}` 部分
+
+1. GET方式: 在接口地址后面拼接相应参数即可
+
+示例:
+* text:
+```bash
+curl 'https://xxx.pages.dev/telegram?cf_token=token&msgtype=text&msgcontent.content=消息内容'
+```
+
+* markdown
+```bash
+curl 'https://xxx.pages.dev/telegram?cf_token=token&msgtype=markdown&msgcontent.content=__消息__'
+```
+
+* html:
+```bash
+curl 'https://xxx.pages.dev/telegram?cf_token=token&msgtype=html&msgcontent.content=消息内容'
+```
+
+
+2. POST方式: 请求体使用json字符串传入接口
+
+示例:
+* text:
+```bash
+curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息内容" }}'
+```
+
+* markdown
+```bash
+curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "__消息__" }}'
+```
+
+* html:
+```bash
+curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=html' -d '{"msgcontent": { "content": "消息内容" }}'
+```

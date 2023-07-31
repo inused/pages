@@ -4,8 +4,6 @@
  */
 const ENV_REQUIRED = {
   Telegram_botToken: 'bot 的 token', // 通过 [@BotFather](https://t.me/BotFather)创建bot并获取token
-  Wechat_agentId: '应用ID', // 使用哪个应用推送就填写哪个应用的
-  Wechat_corpsecret: '应用Secret', // 使用哪个应用推送就填写哪个应用的
 }
 const ENV_OPTIONAL = {
   Telegram_chatId: '与bot的会话ID' // 即给谁发消息，实际为目标用户的ID, 可被接口参数中的 chatId 覆盖
