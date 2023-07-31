@@ -72,32 +72,34 @@ curl 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown&msgcontent.co
 
 2. POST方式: 请求体使用json字符串传入接口
 
+  请求头中必须设置 `content-type: application/json`, 否则无法提取到请求体中的参数
+
 示例:
 * text:
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息标题\n消息内容: 点击<a href="https://github.com/">跳转</a>" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息标题\n消息内容: 点击<a href="https://github.com/">跳转</a>" }}'
 ```
 
 * textcard: 
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=textcard' -d '{"msgcontent": { "title": "消息标题","description": "描述信息","url": "https://github.com" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=textcard' -d '{"msgcontent": { "title": "消息标题","description": "描述信息","url": "https://github.com" }}'
 ```
 
 * markdown
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "# 消息1 *消息2*" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "# 消息1 *消息2*" }}'
 ```
 
-### 二、Telegram bot推送消息
+### 三、Telegram bot推送消息
 
 #### 创建Telegram bot
 
 * 可查看官方文档[How Do I Create a Bot?](https://core.telegram.org/bots#how-do-i-create-a-bot)部分，注册一个bot
   * 通过 @BotFather https://t.me/BotFather 创建bot
-  * 1. /start
-  * 2. /newbot  输入bot用户名,可用的话则直接创建
-  * 3. /mybots 点击要使用的bot
-  * 4. 点击 API Token 按钮，获取token
+  * /start
+  * /newbot  输入bot用户名,可用的话则直接创建
+  * /mybots 点击要使用的bot
+  * 点击 API Token 按钮，获取token
 * 获取chat_id,实际为用户ID
   * 1. 打开新建的bot，向其任意发送一条消息
   * 2. 访问 https://api.telegram.org/bot{上面获取到bot的token}/getUpdates
@@ -143,15 +145,15 @@ curl 'https://xxx.pages.dev/telegram?cf_token=token&msgtype=html&msgcontent.cont
 示例:
 * text:
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息内容" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息内容" }}'
 ```
 
 * markdown
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "__消息__" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "__消息__" }}'
 ```
 
 * html:
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=html' -d '{"msgcontent": { "content": "消息内容" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=html' -d '{"msgcontent": { "content": "消息内容" }}'
 ```
