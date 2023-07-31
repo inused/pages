@@ -2,11 +2,7 @@
 
 > 用于 Cloudflare Pages 部署
 
-## 企业微信
-
-> 支持向企业微信发送消息
-
-### 一、Cloudflare配置
+## 一、Cloudflare配置
 
 创建pages应用可查看[Cloudflare Docs](https://developers.cloudflare.com/pages/),或自行搜索创建应用的教程
 * 菜单路径 `Workers & Pages` > `Overview` > `Create application` > `pages` > `Connect to Git` > 后续根据页面提示进行即可(绑定Github账号后选择仓库、设置分支等)
@@ -21,11 +17,14 @@
   * 菜单路径 `Workers & Pages` > `KV` > `Create a namespace`,填写名称后创建
   * 进入新建的page应用详情后，进入 `Settings` > `Functions` > `KV namespace bindings`,添加绑定信息(生产环境和预览环境用到哪个就设置哪个)
     * `Variable name`部分填入`pagesKV`
-    * `KV namespace`部分选择4.1新建的 KV
+    * `KV namespace`部分选择刚才新建的 KV
 
-### 二、企业微信推送消息
 
-#### 注册企业微信及应用
+## 二、企业微信消息推送
+
+> 支持向企业微信发送消息
+
+### 注册企业微信及应用
 
 * 可查看[企业微信帮助中心-注册](https://open.work.weixin.qq.com/help2/pc/15422)部分，注册企业(无需认证，个人使用完全足够)。
 * 查看[企业微信帮助中心-自建应用](https://open.work.weixin.qq.com/help2/pc/17693)部分，在新建的企业中创建新应用。
@@ -41,7 +40,7 @@ Wechat_corpsecret: 企业微信中自建应用的应用Secret
 Wechat_touser: 默认接收消息的用户,可在调用接口时自行指定 touser 参数覆盖
 ```
 
-#### 使用
+### 使用
 
 > 接口地址 `https://{你的pages应用名}.pages.dev/wechat?cf_token={刚才在环境变量中配置的WEB_TOKEN}&msgtype={本次发送消息的类型,默认text}&其他参数`
 
@@ -72,32 +71,34 @@ curl 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown&msgcontent.co
 
 2. POST方式: 请求体使用json字符串传入接口
 
+  请求头中必须设置 `content-type: application/json`, 否则无法提取到请求体中的参数
+
 示例:
 * text:
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息标题\n消息内容: 点击<a href="https://github.com/">跳转</a>" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息标题\n消息内容: 点击<a href="https://github.com/">跳转</a>" }}'
 ```
 
 * textcard: 
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=textcard' -d '{"msgcontent": { "title": "消息标题","description": "描述信息","url": "https://github.com" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=textcard' -d '{"msgcontent": { "title": "消息标题","description": "描述信息","url": "https://github.com" }}'
 ```
 
 * markdown
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "# 消息1 *消息2*" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "# 消息1 *消息2*" }}'
 ```
 
-### 二、Telegram bot推送消息
+## 三、Telegram bot推送消息
 
-#### 创建Telegram bot
+### 创建Telegram bot
 
 * 可查看官方文档[How Do I Create a Bot?](https://core.telegram.org/bots#how-do-i-create-a-bot)部分，注册一个bot
   * 通过 @BotFather https://t.me/BotFather 创建bot
-  * 1. /start
-  * 2. /newbot  输入bot用户名,可用的话则直接创建
-  * 3. /mybots 点击要使用的bot
-  * 4. 点击 API Token 按钮，获取token
+  * /start
+  * /newbot  输入bot用户名,可用的话则直接创建
+  * /mybots 点击要使用的bot
+  * 点击 API Token 按钮，获取token
 * 获取chat_id,实际为用户ID
   * 1. 打开新建的bot，向其任意发送一条消息
   * 2. 访问 https://api.telegram.org/bot{上面获取到bot的token}/getUpdates
@@ -109,7 +110,7 @@ Telegram_botToken: 通过 [@BotFather](https://t.me/BotFather)创建bot并获取
 Telegram_chatId: 给谁发消息，实际为目标用户的ID, 可被接口参数中的 chatId 覆盖
 ```
 
-#### 使用
+### 使用
 
 > 接口地址 `https://{你的pages应用名}.pages.dev/telegram?cf_token={刚才在环境变量中配置的WEB_TOKEN}&msgtype={本次发送消息的类型,默认text}&其他参数`
 
@@ -140,18 +141,20 @@ curl 'https://xxx.pages.dev/telegram?cf_token=token&msgtype=html&msgcontent.cont
 
 2. POST方式: 请求体使用json字符串传入接口
 
+  请求头中必须设置 `content-type: application/json`, 否则无法提取到请求体中的参数
+
 示例:
 * text:
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息内容" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=text' -d '{"msgcontent": { "content": "消息内容" }}'
 ```
 
 * markdown
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "__消息__" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=markdown' -d '{"msgcontent": { "content": "__消息__" }}'
 ```
 
 * html:
 ```bash
-curl -X POST 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=html' -d '{"msgcontent": { "content": "消息内容" }}'
+curl -X POST -H 'content-type: application/json; charset=utf-8' 'https://xxx.pages.dev/wechat?cf_token=token&msgtype=html' -d '{"msgcontent": { "content": "消息内容" }}'
 ```
