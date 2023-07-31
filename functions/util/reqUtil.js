@@ -42,8 +42,12 @@ export default {
    * @returns {*} 提取到的参数值
    */
   async getBodyParam(request, paramKey) {
-    if (request.method.toLowerCase() !== 'post') {
-      console.log(`request.method 为 "${request.method}", 忽略提取bodyParam`)
+    if (!request.body) {
+      console.log(`无body数据, 忽略提取bodyParam`)
+      return null;
+    }
+    if (!request.headers.get('content-type')?.toLowerCase()?.startsWith('application/json')) {
+      console.log(`content-type: ${request.headers.get('content-type')}, 忽略提取bodyParam`)
       return null;
     }
     try {
@@ -61,8 +65,12 @@ export default {
    */
   async getBodyParams(request, paramKeys) {
     const params = {};
-    if (request.method.toLowerCase() !== 'post') {
-      console.log(`request.method 为 "${request.method}", 忽略提取bodyParam`)
+    if (!request.body) {
+      console.log(`无body数据, 忽略提取bodyParam`)
+      return params;
+    }
+    if (!request.headers.get('content-type')?.toLowerCase()?.startsWith('application/json')) {
+      console.log(`content-type: ${request.headers.get('content-type')}, 忽略提取bodyParam`)
       return params;
     }
     try {
