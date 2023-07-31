@@ -1,11 +1,16 @@
 /*
  * 利用企业微信进行消息推送
  * 需要在 Cloudflare pages 中添加以下环境变量
- *   Wechat_corpid: 企业ID
- *   Wechat_agentId: 应用ID, 使用哪个应用推送就填写哪个应用的
- *   Wechat_corpsecret: 应用secret, 使用哪个应用推送就填写哪个应用的
- *   Wechat_touser: 默认推送目标,即向应用中哪个用户发送消息, 多个时以'|'分隔, 如 ZhangSan|LiSi|WangWu, 可被 send()方法的 touser 参数覆盖
  */
+const ENV_REQUIRED = {
+  Wechat_corpid: '企业ID',
+  Wechat_agentId: '应用ID', // 使用哪个应用推送就填写哪个应用的
+  Wechat_corpsecret: '应用Secret', // 使用哪个应用推送就填写哪个应用的
+}
+const ENV_OPTIONAL = {
+  Wechat_touser: '消息接收用户' // 即向应用中哪个用户发送消息, 多个时以'|'分隔, 如 ZhangSan|LiSi|WangWu, 可被 send()方法的 touser 参数覆盖
+}
+const ENV_REQUIRED_KEYS = Object.keys(ENV_REQUIRED);
 
 // 企业微信api
 const api_base = 'https://qyapi.weixin.qq.com/cgi-bin';
@@ -95,14 +100,23 @@ async function getAccesstoken(env, refresh = false) {
  * @returns {Response} 发送结果
  */
 async function send(cfContext, params, refresh = false, retryNum = 0) {
+  const env = cfContext.env;
+
+  let msg = '';
+  ENV_REQUIRED_KEYS.forEach(k => {
+    if (!env[k]) { msg = `${msg}${k} `; }
+  })
+  if (msg) return resUtil.initResponse(400, 400, `环境变量 ${msg}未配置`);
+
   if (!params || Object.entries(params) === 0) {
     return resUtil.initResponse(400, 400, '参数为空');
   }
 
   let msgtype = params.msgtype || MSG_TYPE,
-    msgcontent = params.msgcontent;
-  if (!msgcontent || Object.entries(msgcontent) === 0) {
-    return resUtil.initResponse(400, 400, `"${msgtype}"格式的消息内容为空`);
+    msgcontent = params.msgcontent,
+    touser = params.touser;
+  if (!touser && !env.Wechat_touser) {
+    return resUtil.initResponse(400, 400, `touser 参数为空且未配置环境变量Wechat_touser`);
   }
 
   let accessToken, success, wechatTip, i = 0;
@@ -114,7 +128,6 @@ async function send(cfContext, params, refresh = false, retryNum = 0) {
     return resUtil.initResponse(401, wechatTip.wechatCode, `access_token 获取失败: ${wechatTip.wechatMsg}`);
   }
 
-  const env = cfContext.env;
   // 实际调用发送消息接口
   return fetch(`${api_base}/message/send?access_token=${accessToken}`, {
     method: 'POST',
@@ -153,84 +166,78 @@ async function send(cfContext, params, refresh = false, retryNum = 0) {
   });
 }
 
-/** 生成参数异常的 Response */
-function initParamErrorResponse(msg) {
-  return resUtil.initResponse(400, 400, msg);
-}
+  export default {
 
+    /**
+     * 发送纯文本消息
+     * @param {object} params 参数查看 {@link send} 函数, 对于 msgcontent 参数有如下要求
+     * {
+     *  content: '发送文本信息, 支持换行符\n 支持HTML的a标签(仅允许存在href属性), 最长不超过2048个字节,超出时被截断'
+     * }
+     * @returns {Response}
+     */
+    async text(cfContext, params) {
+      // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.content=消息内容'
+      const msgText = params?.msgcontent?.content || params?.['msgcontent.content'];
+      if (empty(msgText)) return resUtil.initResponseError_param('消息内容 msgcontet.content 为空');
 
-export default {
+      params.msgtype = 'text';
+      params.msgcontent = {
+        content: msgText
+      };
+      return await send(cfContext, params);
+    },
 
-  /**
-   * 发送纯文本消息
-   * @param {object} params 参数查看 {@link send} 函数, 对于 msgcontent 参数有如下要求
-   * {
-   *  content: '发送文本信息, 支持换行符\n 支持HTML的a标签(仅允许存在href属性), 最长不超过2048个字节,超出时被截断'
-   * }
-   * @returns {Response}
-   */
-  async text(cfContext, params) {
-    // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.content=消息内容'
-    const msgText = params?.msgcontent?.content || params?.['msgcontent.content'];
-    if (empty(msgText)) return initParamErrorResponse('消息内容 msgcontet.content 为空');
+    /**
+     * 发送文本卡片消息
+     * @param {object} params 参数查看 {@link send} 函数, 对于 msgcontent 参数有如下要求
+     * {
+     *  title: '卡片标题 不超过128个字节',
+     *  description: '描述，不超过512个字节,支持完整的HTML标签(不支持a标签)',
+     *  url: '点击卡片后跳转的链接,最长2048字节，请确保包含了协议头(http/https)'
+     * }
+     * @returns {Response}
+     */
+    async textcard(cfContext, params) {
+      // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.xxx=内容'
+      const title = params?.msgcontent?.title || params?.['msgcontent.title'],
+        description = params?.msgcontent?.description || params?.['msgcontent.description'],
+        url = params?.msgcontent?.url || params?.['msgcontent.url'];
 
-    params.msgtype = 'text';
-    params.msgcontent = {
-      content: msgText
-    };
-    return await send(cfContext, params);
-  },
+      let errMsg = '';
+      if (empty(title)) errMsg += 'msgcontent.title ';
+      if (empty(description)) errMsg += 'msgcontent.description ';
+      if (empty(url)) errMsg += 'msgcontent.url ';
+      if (errMsg) return resUtil.initResponseError_param(`${errMsg}不能为空`);
 
-  /**
-   * 发送文本卡片消息
-   * @param {object} params 参数查看 {@link send} 函数, 对于 msgcontent 参数有如下要求
-   * {
-   *  title: '卡片标题 不超过128个字节',
-   *  description: '描述，不超过512个字节,支持完整的HTML标签(不支持a标签)',
-   *  url: '点击卡片后跳转的链接,最长2048字节，请确保包含了协议头(http/https)'
-   * }
-   * @returns {Response}
-   */
-  async textcard(cfContext, params) {
-    // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.xxx=内容'
-    const title = params?.msgcontent?.title || params?.['msgcontent.title'],
-      description = params?.msgcontent?.description || params?.['msgcontent.description'],
-      url = params?.msgcontent?.url || params?.['msgcontent.url'];
+      params.msgtype = 'textcard';
+      params.msgcontent = {
+        title: title,
+        description: description,
+        url: url,
+        btntxt: "详情" // 默认详情
+      };
+      return await send(cfContext, params);
+    },
 
-    let errMsg = '';
-    if (empty(title)) errMsg += 'msgcontent.title ';
-    if (empty(description)) errMsg += 'msgcontent.description ';
-    if (empty(url)) errMsg += 'msgcontent.url ';
-    if (errMsg) return initParamErrorResponse(`${errMsg}不能为空`);
+    /**
+     * 发送 Markdown 消息
+     * 支持的Markdown语法地址: https://developer.work.weixin.qq.com/document/path/90236#10167/%E6%94%AF%E6%8C%81%E7%9A%84markdown%E8%AF%AD%E6%B3%95
+     * @param {object} params 参数查看 {@link send} 函数, 对于 msgcontent 参数有如下要求
+     * {
+     *  content: 'markdown, 最长不超过2048个字节,超出时被截断'
+     * }
+     * @returns {Response}
+     */
+    async markdown(cfContext, params) {
+      // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.content=消息内容'
+      const msgText = params?.msgcontent?.content || params?.['msgcontent.content'];
+      if (empty(msgText)) return resUtil.initResponseError_param('消息内容 msgcontet.content 为空');
 
-    params.msgtype = 'textcard';
-    params.msgcontent = {
-      title: title,
-      description: description,
-      url: url,
-      btntxt: "详情" // 默认详情
-    };
-    return await send(cfContext, params);
-  },
-
-  /**
-   * 发送 Markdown 消息
-   * 支持的Markdown语法地址: https://developer.work.weixin.qq.com/document/path/90236#10167/%E6%94%AF%E6%8C%81%E7%9A%84markdown%E8%AF%AD%E6%B3%95
-   * @param {object} params 参数查看 {@link send} 函数, 对于 msgcontent 参数有如下要求
-   * {
-   *  content: 'markdown, 最长不超过2048个字节,超出时被截断'
-   * }
-   * @returns {Response}
-   */
-  async markdown(cfContext, params) {
-    // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.content=消息内容'
-    const msgText = params?.msgcontent?.content || params?.['msgcontent.content'];
-    if (empty(msgText)) return initParamErrorResponse('消息内容 msgcontet.content 为空');
-
-    params.msgtype = 'markdown';
-    params.msgcontent = {
-      content: msgText
-    };
-    return await send(cfContext, params);
+      params.msgtype = 'markdown';
+      params.msgcontent = {
+        content: msgText
+      };
+      return await send(cfContext, params);
+    }
   }
-}

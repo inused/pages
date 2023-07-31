@@ -24,5 +24,20 @@ export default {
   /** 生成一个成功状态的 Response */
   initResponseSuccess(resMsg, extData) {
     return this.initResponse(200, 0, resMsg, extData);
+  },
+
+  /** 根据 error 生成响应对象 */
+  errorHandler(error) {
+    console.error('服务异常', error);
+    const { message, stack } = error;
+    return this.initResponse(500, 500, message, {
+      stack: stack
+    });
+  },
+
+  /** 生成参数异常的 Response */
+  initResponseError_param(msg) {
+    return this.initResponse(400, 400, msg);
   }
+
 }
