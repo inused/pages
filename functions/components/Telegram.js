@@ -49,6 +49,11 @@ async function send(cfContext, params) {
     return resUtil.initResponse(400, 400, `chatId 参数为空且未配置环境变量Telegram_chatId`);
   }
 
+  console.log('params', JSON.stringify({
+    text: msgtext, // 消息内容,最大4096字符
+    parse_mode: parseMode, // 消息格式
+    disable_web_page_preview: true, // 禁用消息中HTML链接的预览
+  }));
   return fetch(`${baseApi}${cfContext.env.Telegram_botToken}/sendMessage?chat_id=${chatId}`, {
     method: 'POST',
     body: JSON.stringify({
