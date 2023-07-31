@@ -44,8 +44,8 @@ async function send(cfContext, params) {
 
   let parseMode = params.msgtype || undefined,
     msgtext = params.msgtext,
-    chatId = params.chatId;
-  if (!chatId && !env.Telegram_chatId) {
+    chatId = params.chatId || env.Telegram_chatId;
+  if (!chatId) {
     return resUtil.initResponse(400, 400, `chatId 参数为空且未配置环境变量Telegram_chatId`);
   }
 
@@ -82,7 +82,7 @@ async function send(cfContext, params) {
 function paramCheck(params) {
   // post传递json时正常结构, get传递时在url中拼接 '&msgcontent.content=消息内容'
   const msgText = params?.msgcontent?.content || params?.['msgcontent.content'];
-  if (empty(msgText)) return resUtil.initResponseError_param('消息内容 msgcontet.content 为空');
+  if (empty(msgText)) return resUtil.initResponseError_param('消息内容 msgcontent.content 为空');
 
   // params.msgtype = undefined;
   params.msgtext = msgText;
