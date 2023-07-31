@@ -61,7 +61,7 @@ async function send(cfContext, params) {
     }
   }).then(TeleRes => {
     return TeleRes.json();
-  }).then(TeleResJson => {
+  }).then(TeleResJson => { console.log('TeleResJson', TeleResJson);
     if (TeleResJson.ok === true) { // 发送成功
       return resUtil.initResponse(200, 0, '发送成功');
     }
