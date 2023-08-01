@@ -17,7 +17,7 @@
   * 菜单路径 `Workers & Pages` > `KV` > `Create a namespace`,填写名称后创建
   * 进入新建的page应用详情后，进入 `Settings` > `Functions` > `KV namespace bindings`,添加绑定信息(生产环境和预览环境用到哪个就设置哪个)
     * `Variable name`部分填入`pagesKV`
-    * `KV namespace`部分选择4.1新建的 KV
+    * `KV namespace`部分选择刚才新建的 KV
 
 
 ## 二、企业微信消息推送
