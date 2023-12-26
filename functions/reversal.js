@@ -11,13 +11,13 @@ import resUtil from './util/resUtil.js';
 export async function onRequest(cfContext) {
   // 反代目标
   const target = reqUtil.getSearchParam(cfContext.request, "target");
-  console.log(cfContext)
-  console.log(cfContext.request)
-  console.log(target)
+  console.log('cfContext =====', cfContext)
+  console.log('cfContext.request ======', cfContext.request)
+  console.log('cfContext.request.searchParams ======', cfContext.request.searchParams)
   if (!target) {
     return resUtil.initResponse(500, 500, 'target is required');
   }
 
   // 当前仅转发, 不对其他数据进行修改(如host/referer等)
-  return fetch(new Request(target, cfContext.request))
+  return await fetch(new Request(target, cfContext.request))
 }
