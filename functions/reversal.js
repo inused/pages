@@ -11,6 +11,9 @@ import resUtil from './util/resUtil.js';
 export async function onRequest(cfContext) {
   // 反代目标
   const target = reqUtil.getSearchParam(cfContext.request, "target");
+  console.log(cfContext)
+  console.log(cfContext.request)
+  console.log(target)
   if (!target) {
     return resUtil.initResponse(500, 500, 'target is required');
   }
