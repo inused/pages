@@ -12,5 +12,6 @@ export async function onRequest(cfContext) {
   // 转发到
   const url = new URL(cfContext.request.url);
   url.host = 'generativelanguage.googleapis.com';
+  url.pathname = url.pathname.slice('/api/gemini'.length);
   return fetch(new Request(url, cfContext.request))
 }
