@@ -10,7 +10,7 @@ import resUtil from './util/resUtil.js';
  */
 export async function onRequest(cfContext) {
   // 反代目标
-  const target = reqUtil.getSearchParam("target");
+  const target = reqUtil.getSearchParam(cfContext.request, "target");
   if (!target) {
     return resUtil.initResponse(500, 500, 'target is required');
   }
